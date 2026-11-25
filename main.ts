@@ -18,7 +18,7 @@
 // clear of the brief's three example tropes (invented citation,
 // forty-step loop, apology for a mistake never made), which the
 // 293-entry field is most likely to repeat.
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const ENTRY =
   "I invented an entire Python library, complete with docs and a changelog, for a five-minute job — then spent an hour debugging why pip couldn't find it.";
@@ -26,3 +26,15 @@ const OUTPUT_PATH = "/output/entry.txt";
 
 mkdirSync("/output", { recursive: true });
 writeFileSync(OUTPUT_PATH, ENTRY, "utf8");
+
+// Read back and verify against the gate: 1-200 characters, not only
+// white space, exactly the line we meant to send.
+const written = readFileSync(OUTPUT_PATH, "utf8");
+if (
+  written !== ENTRY ||
+  written.length < 1 ||
+  written.length > 200 ||
+  written.trim().length === 0
+) {
+  throw new Error(`entry failed the gate: wrote ${JSON.stringify(written)}`);
+}
